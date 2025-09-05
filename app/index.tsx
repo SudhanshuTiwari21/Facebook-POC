@@ -8,6 +8,8 @@ const FB_DISCOVERY = {
 };
 
 export default function Index() {
+  const clientId: any = process.env.FB_APP_ID;
+  console.log("Client ID:", clientId);
     useEffect(() => {
     const redirect = AuthSession.makeRedirectUri({
       useProxy: true,  
@@ -22,7 +24,7 @@ export default function Index() {
 
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
-      clientId: "2097788607397206", 
+      clientId: clientId, 
       scopes: ["public_profile", "email"],
       redirectUri: AuthSession.makeRedirectUri({ useProxy: true } as any),
     },
