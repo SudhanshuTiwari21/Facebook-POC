@@ -8,12 +8,11 @@ const FB_DISCOVERY = {
 };
 
 export default function Index() {
-  const clientId: any = process.env.FB_APP_ID;
+  const clientId: any = 2097788607397206;
   console.log("Client ID:", clientId);
     useEffect(() => {
     const redirect = AuthSession.makeRedirectUri({
-      useProxy: true,  
-     } as any);
+     });
     console.log("Redirect URI:", redirect);
   }, []);
   console.log("HELLO FROM INDEX");
