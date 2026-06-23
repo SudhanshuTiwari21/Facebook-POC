@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
+# Meta Login POC (Facebook · Instagram · Threads)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Three separate Vite web apps + one Express API.
 
-## Get started
+| App | Folder | Dev port | API prefix |
+|-----|--------|----------|------------|
+| Facebook Pages + Messenger | `web-app/` | 5173 | `/api` |
+| Instagram DMs | `instagram-app/` | 5174 | `/api/instagram` |
+| Threads posts + replies | `threads-app/` | 5175 | `/api/threads` |
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Quick start
 
 ```bash
-npm run reset-project
+cd server && npm install
+cd ../web-app && npm install
+cd ../instagram-app && npm install
+cd ../threads-app && npm install
+cd ..
+npm run dev
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Or run one platform:
 
-## Learn more
+```bash
+npm run dev:facebook
+npm run dev:instagram
+npm run dev:threads
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Environment (per app)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Each app has its own `.env` (copy from `.env.example`):
 
-## Join the community
+```env
+VITE_FB_APP_ID=          # Meta app ID for that product
+VITE_FB_CONFIG_ID=       # Facebook Login for Business configuration ID
+VITE_FB_GRAPH_VERSION=v20.0
+```
 
-Join our community of developers creating universal apps.
+Use **separate Meta apps** (or separate Business Login configurations) for Facebook vs Instagram vs Threads, each with the right permissions in the configuration.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Facebook (`web-app`)
+- Permissions in config: `pages_show_list`, `pages_read_engagement`, `pages_messaging`, `pages_manage_metadata`, `business_management`, …
+
+### Instagram (`instagram-app`)
+- IG Professional linked to a Facebook Page
+- Config permissions: `instagram_basic`, `instagram_manage_messages`, `pages_show_list`, `business_management`, …
+
+### Threads (`threads-app`)
+- Config permissions: `threads_basic`, `threads_manage_replies`, …
+- UI lists your **threads** and **replies** (Threads is not Messenger-style DMs)
+
+## ngrok (HTTPS)
+
+Each app needs its own tunnel port (or one tunnel + path — simplest is separate tunnels):
+
+```bash
+ngrok http 5173   # Facebook
+ngrok http 5174   # Instagram
+ngrok http 5175   # Threads
+```
+
+Add each ngrok URL to that Meta app’s **App Domains**, **OAuth Redirect URIs**, and **JavaScript SDK allowed domains**.
+
+## API
+
+- Health: `GET http://localhost:8787/api/health`
+- Facebook: existing `/api/*` routes
+- Instagram: `/api/instagram/*`
+- Threads: `/api/threads/*`
+
+Sessions use separate cookies: `sid`, `ig_sid`, `th_sid`.
